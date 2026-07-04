@@ -199,7 +199,7 @@ class SyntheticExperiment:
         cfg = self.config
 
         if cfg.metric_type == "binary":
-            # Two-proportion z-test
+
             successes = np.array([control.sum(), treatment.sum()])
             nobs = np.array([len(control), len(treatment)])
             if nobs[0] == 0 or nobs[1] == 0:
@@ -219,13 +219,13 @@ class SyntheticExperiment:
             z_stat = (p2 - p1) / se
             p_value = 2 * (1 - stats.norm.cdf(abs(z_stat)))
         else:
-            # Independent two-sample t-test (Welch's)
+
             stat_result = stats.ttest_ind(treatment, control, equal_var=False)
             p_value = stat_result.pvalue
 
         is_significant = p_value < cfg.alpha
 
-        # Check if effect is in the correct direction
+
         if cfg.metric_type == "binary":
             observed_diff = treatment.mean() - control.mean()
         else:
@@ -443,7 +443,7 @@ if __name__ == "__main__":
     print("SYNTHETIC EXPERIMENT SIMULATOR — DEMO")
     print("=" * 70)
 
-    # --- Binary experiment simulation ---
+
     print("\n--- Binary Experiment (baseline=10%, effect=+2%) ---")
     sim = SyntheticExperiment(
         baseline_rate=0.10,
@@ -457,12 +457,12 @@ if __name__ == "__main__":
     print(f"Control:   {control.sum()} conversions / {len(control)} = {control.mean():.4f}")
     print(f"Treatment: {treatment.sum()} conversions / {len(treatment)} = {treatment.mean():.4f}")
 
-    # --- Power validation ---
+
     print("\n--- Power Validation (500 simulations) ---")
     validation = sim.run_power_validation(n_simulations=500)
     print(validation["summary"])
 
-    # --- Null hypothesis validation ---
+
     print("\n--- Null Hypothesis Validation ---")
     null_result = run_null_validation(
         metric_type="binary",
@@ -473,7 +473,7 @@ if __name__ == "__main__":
     )
     print(null_result["summary"])
 
-    # --- Continuous experiment ---
+
     print("\n--- Continuous Experiment (baseline=50, std=10, effect=+3) ---")
     sim_cont = SyntheticExperiment(
         baseline_rate=50.0,

@@ -37,9 +37,6 @@ from scipy import stats
 import plotly.graph_objects as go
 
 
-# ---------------------------------------------------------------------------
-# Result container
-# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class BayesianABResult:
@@ -92,9 +89,6 @@ class BayesianABResult:
     risk_threshold: float
 
 
-# ---------------------------------------------------------------------------
-# Core functions
-# ---------------------------------------------------------------------------
 
 def compute_posterior(
     successes: int,
@@ -309,9 +303,6 @@ def compute_credible_interval(
     return lower, upper
 
 
-# ---------------------------------------------------------------------------
-# Visualization
-# ---------------------------------------------------------------------------
 
 def plot_posteriors(
     posterior_a: stats.rv_frozen,
@@ -451,9 +442,6 @@ def plot_posteriors(
     return fig
 
 
-# ---------------------------------------------------------------------------
-# Orchestrator
-# ---------------------------------------------------------------------------
 
 def run_bayesian_ab(
     successes_a: int,
@@ -553,14 +541,9 @@ def run_bayesian_ab(
     )
 
 
-# ---------------------------------------------------------------------------
-# Demo
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # Scenario: landing-page A/B test
-    #   Control (A): 120 conversions out of 1 000 visitors  (12.0 %)
-    #   Treatment (B): 145 conversions out of 1 000 visitors (14.5 %)
+
     SUCCESSES_A, TRIALS_A = 120, 1_000
     SUCCESSES_B, TRIALS_B = 145, 1_000
 
@@ -590,7 +573,7 @@ if __name__ == "__main__":
     print(f"  >> Verdict: {result.verdict}")
     print("=" * 64)
 
-    # Optional: render interactive plot
+
     post_a = compute_posterior(SUCCESSES_A, TRIALS_A)
     post_b = compute_posterior(SUCCESSES_B, TRIALS_B)
     fig = plot_posteriors(post_a, post_b)

@@ -37,9 +37,6 @@ from scipy import stats
 from statsmodels.stats.proportion import proportions_ztest
 
 
-# ---------------------------------------------------------------------------
-# Structured return type
-# ---------------------------------------------------------------------------
 
 @dataclass
 class TestResult:
@@ -94,9 +91,6 @@ class TestResult:
     confidence_interval: Optional[Tuple[float, float]] = field(default=None)
 
 
-# ---------------------------------------------------------------------------
-# Two-sample t-test
-# ---------------------------------------------------------------------------
 
 def two_sample_ttest(
     group_a: Sequence[float],
@@ -228,9 +222,6 @@ def two_sample_ttest(
     )
 
 
-# ---------------------------------------------------------------------------
-# Two-proportion z-test
-# ---------------------------------------------------------------------------
 
 def z_test_proportions(
     successes_a: int,
@@ -344,9 +335,6 @@ def z_test_proportions(
     )
 
 
-# ---------------------------------------------------------------------------
-# Chi-square test of independence
-# ---------------------------------------------------------------------------
 
 def chi_square_test(
     contingency_table: Union[np.ndarray, List[List[int]]],
@@ -433,13 +421,10 @@ def chi_square_test(
         is_significant=is_sig,
         interpretation=interpretation,
         effect_size=float(cramers_v),
-        confidence_interval=None,  # CI not standard for χ²
+        confidence_interval=None,
     )
 
 
-# ---------------------------------------------------------------------------
-# One-way ANOVA
-# ---------------------------------------------------------------------------
 
 def one_way_anova(*groups: Sequence[float], alpha: float = 0.05) -> TestResult:
     """One-way analysis of variance (ANOVA) for three or more groups.
@@ -536,13 +521,10 @@ def one_way_anova(*groups: Sequence[float], alpha: float = 0.05) -> TestResult:
         is_significant=is_sig,
         interpretation=interpretation,
         effect_size=float(eta_squared),
-        confidence_interval=None,  # ANOVA doesn't produce a single CI
+        confidence_interval=None,
     )
 
 
-# ---------------------------------------------------------------------------
-# Mann–Whitney U test
-# ---------------------------------------------------------------------------
 
 def mann_whitney_u(
     group_a: Sequence[float],
@@ -644,9 +626,6 @@ def mann_whitney_u(
     )
 
 
-# ---------------------------------------------------------------------------
-# Test selection helper
-# ---------------------------------------------------------------------------
 
 def select_test(
     metric_type: str,
@@ -749,7 +728,7 @@ def select_test(
                 "alternatives": ["two_sample_ttest"],
             }
     else:
-        # 3+ groups
+
         return {
             "recommended_test": "one_way_anova",
             "reason": (
@@ -761,15 +740,12 @@ def select_test(
         }
 
 
-# ---------------------------------------------------------------------------
-# Demo / smoke-test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     np.random.seed(42)
     divider = "=" * 72
 
-    # ---- Two-sample t-test ------------------------------------------------
+
     print(divider)
     print("1. TWO-SAMPLE T-TEST")
     print(divider)
@@ -785,7 +761,7 @@ if __name__ == "__main__":
           f"{res.confidence_interval[1]:.4f})")
     print(f"  {res.interpretation}\n")
 
-    # ---- Two-proportion z-test --------------------------------------------
+
     print(divider)
     print("2. TWO-PROPORTION Z-TEST")
     print(divider)
@@ -802,7 +778,7 @@ if __name__ == "__main__":
           f"{res.confidence_interval[1]:.4f})")
     print(f"  {res.interpretation}\n")
 
-    # ---- Chi-square test --------------------------------------------------
+
     print(divider)
     print("3. CHI-SQUARE TEST OF INDEPENDENCE")
     print(divider)
@@ -815,7 +791,7 @@ if __name__ == "__main__":
     print(f"  Cramér's V  : {res.effect_size:.4f}")
     print(f"  {res.interpretation}\n")
 
-    # ---- One-way ANOVA ----------------------------------------------------
+
     print(divider)
     print("4. ONE-WAY ANOVA")
     print(divider)
@@ -830,7 +806,7 @@ if __name__ == "__main__":
     print(f"  η²          : {res.effect_size:.4f}")
     print(f"  {res.interpretation}\n")
 
-    # ---- Mann–Whitney U ---------------------------------------------------
+
     print(divider)
     print("5. MANN–WHITNEY U TEST")
     print(divider)
@@ -844,7 +820,7 @@ if __name__ == "__main__":
     print(f"  Rank-bis. r : {res.effect_size:.4f}")
     print(f"  {res.interpretation}\n")
 
-    # ---- Test selector ----------------------------------------------------
+
     print(divider)
     print("6. TEST SELECTOR")
     print(divider)

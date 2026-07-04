@@ -26,9 +26,6 @@ from statsmodels.stats.power import TTestIndPower, NormalIndPower
 from statsmodels.stats.proportion import proportion_effectsize
 
 
-# ---------------------------------------------------------------------------
-# 1. Sample size for two-proportion z-test
-# ---------------------------------------------------------------------------
 
 def sample_size_proportions(
     baseline_rate: float,
@@ -173,9 +170,6 @@ def sample_size_proportions(
     return n_statsmodels
 
 
-# ---------------------------------------------------------------------------
-# 2. Sample size for two-sample t-test (continuous metrics)
-# ---------------------------------------------------------------------------
 
 def sample_size_continuous(
     baseline_mean: float,
@@ -284,9 +278,6 @@ def sample_size_continuous(
     return math.ceil(n_raw)
 
 
-# ---------------------------------------------------------------------------
-# 3. Validate an existing sample against the required size
-# ---------------------------------------------------------------------------
 
 def validate_sample_size(actual_n: int, required_n: int) -> dict:
     """Compare an actual sample size to the required minimum.
@@ -369,18 +360,14 @@ def validate_sample_size(actual_n: int, required_n: int) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Demo / smoke-test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     print("=" * 72)
     print("  A/B Test Sample-Size Calculator – Demo")
     print("=" * 72)
 
-    # ---- Proportions example ------------------------------------------------
-    baseline = 0.10  # 10 % conversion rate
-    lift = 0.02      # 2 pp absolute MDE
+    baseline = 0.10
+    lift = 0.02
     alpha = 0.05
     pwr = 0.80
 
@@ -396,7 +383,7 @@ if __name__ == "__main__":
         f"\n  ➜ Required n per group: {n_prop:,}"
     )
 
-    # ---- Continuous example -------------------------------------------------
+
     mean = 50.0
     std = 10.0
     mde_cont = 2.0
@@ -415,7 +402,7 @@ if __name__ == "__main__":
         f"\n  ➜ Required n per group: {n_cont:,}"
     )
 
-    # ---- Validation example -------------------------------------------------
+
     actual = 5000
     result = validate_sample_size(actual_n=actual, required_n=n_prop)
     print(f"\n[Validation – Proportions]")

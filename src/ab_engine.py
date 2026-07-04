@@ -583,7 +583,7 @@ if __name__ == "__main__":
     print("A/B TESTING ENGINE — DEMO")
     print("=" * 70)
 
-    # --- Binary test ---
+
     print("\n--- Binary (Conversion Rate) Test ---")
     result = run_ab_test(
         successes_a=120, n_a=1000,
@@ -600,7 +600,7 @@ if __name__ == "__main__":
     print(f"Sample size check:  {result.sample_size_check['message']}")
     print(f"Verdict:            {result.verdict}")
 
-    # --- Continuous test ---
+
     print("\n--- Continuous (Revenue) Test ---")
     np.random.seed(42)
     control = np.random.normal(50, 10, 500)
