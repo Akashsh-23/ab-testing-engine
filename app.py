@@ -229,7 +229,7 @@ def create_plotly_theme():
 
 def main():
     # Hero header
-        st.markdown('<div class="hero-title">A/B Testing Engine</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">A/B Testing Engine</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="hero-subtitle">'
         'Statistical significance, sample sizing, and Bayesian analysis'
