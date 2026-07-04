@@ -397,7 +397,7 @@ def main():
             else:
                 st.markdown("""
                 <div class="glass-card">
-                    <h4 style="color: #e2e8f0; margin-top: 0;">👈 Set your parameters</h4>
+                    <h4 style="color: #e2e8f0; margin-top: 0;">Set your parameters</h4>
                     <p style="color: #94a3b8;">
                         Configure your experiment assumptions on the left and click
                         <strong>Calculate</strong> to see the required sample size and power curve.
