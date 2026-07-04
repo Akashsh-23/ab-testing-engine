@@ -349,7 +349,7 @@ def plot_posteriors(
     >>> fig = plot_posteriors(a, b)
     >>> fig.write_html('posteriors.html')   # doctest: +SKIP
     """
-    # --- Build the x-axis to cover both posteriors comfortably -----------
+
     lo = min(posterior_a.ppf(0.001), posterior_b.ppf(0.001))
     hi = max(posterior_a.ppf(0.999), posterior_b.ppf(0.999))
     x = np.linspace(lo, hi, 1_000)
@@ -357,7 +357,7 @@ def plot_posteriors(
     pdf_a = posterior_a.pdf(x)
     pdf_b = posterior_b.pdf(x)
 
-    # --- Credible intervals for shading ---------------------------------
+
     ci_a = compute_credible_interval(posterior_a)
     ci_b = compute_credible_interval(posterior_b)
 
@@ -368,7 +368,7 @@ def plot_posteriors(
 
     fig = go.Figure()
 
-    # -- Shaded CI region for A ------------------------------------------
+
     ci_mask_a = (x >= ci_a[0]) & (x <= ci_a[1])
     fig.add_trace(
         go.Scatter(
@@ -383,7 +383,7 @@ def plot_posteriors(
         )
     )
 
-    # -- Shaded CI region for B ------------------------------------------
+
     ci_mask_b = (x >= ci_b[0]) & (x <= ci_b[1])
     fig.add_trace(
         go.Scatter(
@@ -398,7 +398,7 @@ def plot_posteriors(
         )
     )
 
-    # -- Main density curves ---------------------------------------------
+
     fig.add_trace(
         go.Scatter(
             x=x,
@@ -418,7 +418,7 @@ def plot_posteriors(
         )
     )
 
-    # -- Layout / dark theme ---------------------------------------------
+
     fig.update_layout(
         title=dict(
             text="Posterior Distributions",
@@ -512,22 +512,22 @@ def run_bayesian_ab(
     >>> print(f"P(B > A) = {result.prob_b_beats_a:.4f}")  # doctest: +SKIP
     P(B > A) = 0.9684
     """
-    # 1. Posteriors -------------------------------------------------------
+
     post_a = compute_posterior(successes_a, trials_a, prior_alpha, prior_beta)
     post_b = compute_posterior(successes_b, trials_b, prior_alpha, prior_beta)
 
-    # 2. Probability of superiority ---------------------------------------
+
     p_b_wins = probability_b_beats_a(post_a, post_b)
     p_a_wins = 1.0 - p_b_wins
 
-    # 3. Expected loss ----------------------------------------------------
+
     loss_a, loss_b = compute_expected_loss(post_a, post_b)
 
-    # 4. Credible intervals -----------------------------------------------
+
     ci_a = compute_credible_interval(post_a)
     ci_b = compute_credible_interval(post_b)
 
-    # 5. Verdict ----------------------------------------------------------
+
     if p_b_wins > 0.95 and loss_b < risk_threshold:
         verdict = "Strong evidence: B is the winner"
     elif p_a_wins > 0.95 and loss_a < risk_threshold:

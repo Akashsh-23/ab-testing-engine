@@ -300,7 +300,7 @@ class SyntheticExperiment:
         observed_power = correct_detection_count / n_simulations
         significance_rate = significant_count / n_simulations
 
-        # Build summary
+
         summary = (
             f"Monte Carlo Validation ({n_simulations} simulations)\n"
             f"  Metric type:      {self.config.metric_type}\n"
@@ -367,7 +367,7 @@ class SyntheticExperiment:
                 }
             )
 
-        # Restore original
+
         self.config.sample_size = original_sample_size
 
         return pd.DataFrame(results)

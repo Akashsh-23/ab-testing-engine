@@ -410,7 +410,7 @@ def run_ab_test(
     >>> print(result.verdict)
     """
 
-    # ── Validate inputs ─────────────────────────────────────────────────────────
+
     if metric_type == "binary":
         if any(v is None for v in [successes_a, n_a, successes_b, n_b]):
             raise ValueError(
@@ -434,12 +434,12 @@ def run_ab_test(
     else:
         raise ValueError(f"metric_type must be 'binary' or 'continuous', got '{metric_type}'")
 
-    # ── Lift ─────────────────────────────────────────────────────────────────────
+
     lift = _compute_lift(control_est, treatment_est)
     absolute_lift = lift["absolute"]
     relative_lift = lift["relative"] if lift["relative"] is not None else 0.0
 
-    # ── Select and run appropriate hypothesis test ───────────────────────────────
+
     if metric_type == "binary":
         test_result = z_test_proportions(successes_a, n_a, successes_b, n_b, alpha=alpha)
         ci = _ci_difference_proportions(control_est, control_n, treatment_est, treatment_n, alpha)
@@ -451,7 +451,7 @@ def run_ab_test(
         effect = _cohens_d(data_a, data_b)
         effect_label = "Cohen's d"
 
-    # ── Power analysis / sample size check ───────────────────────────────────────
+
     observed_mde = abs(absolute_lift) if mde is None else mde
 
     try:
@@ -490,7 +490,7 @@ def run_ab_test(
             "message": "Could not compute required sample size; proceeding with available data.",
         }
 
-    # ── Verdict ──────────────────────────────────────────────────────────────────
+
     verdict, verdict_code = _generate_verdict(
         p_value=test_result.p_value,
         alpha=alpha,

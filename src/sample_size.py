@@ -103,7 +103,7 @@ def sample_size_proportions(
     ...                        alpha=0.05, power=0.90)
     4849
     """
-    # ---- input validation ---------------------------------------------------
+
     if not 0 < baseline_rate < 1:
         raise ValueError(
             f"baseline_rate must be in (0, 1), got {baseline_rate}"
@@ -126,7 +126,7 @@ def sample_size_proportions(
             f"got '{alternative}'"
         )
 
-    # ---- closed-form formula ------------------------------------------------
+
     p1 = baseline_rate
     beta = 1.0 - power
 
@@ -143,7 +143,7 @@ def sample_size_proportions(
     denominator = (p2 - p1) ** 2
     n_formula = math.ceil(numerator / denominator)
 
-    # ---- cross-validation via statsmodels -----------------------------------
+
     effect_size_h = proportion_effectsize(p2, p1)
     sm_power = NormalIndPower()
     n_statsmodels = math.ceil(
@@ -156,7 +156,7 @@ def sample_size_proportions(
         )
     )
 
-    # Warn if the two estimates diverge meaningfully
+
     if n_formula > 0 and abs(n_formula - n_statsmodels) / n_formula > 0.10:
         import warnings
 
@@ -251,7 +251,7 @@ def sample_size_continuous(
     ...                        mde=2.0, alpha=0.01, power=0.90)
     709
     """
-    # ---- input validation ---------------------------------------------------
+
     if baseline_std <= 0:
         raise ValueError(
             f"baseline_std must be positive, got {baseline_std}"
@@ -269,7 +269,7 @@ def sample_size_continuous(
             f"got '{alternative}'"
         )
 
-    # ---- Cohen's d and statsmodels solve ------------------------------------
+
     cohens_d = abs(mde) / baseline_std
 
     power_analysis = TTestIndPower()

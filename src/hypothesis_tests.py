@@ -169,10 +169,10 @@ def two_sample_ttest(
             f"Got n_a={a.size}, n_b={b.size}."
         )
 
-    # --- scipy t-test ---
+
     t_stat, p_value = stats.ttest_ind(a, b, equal_var=equal_var)
 
-    # --- Cohen's d (pooled SD) ---
+
     n_a, n_b = a.size, b.size
     mean_a, mean_b = a.mean(), b.mean()
     var_a, var_b = a.var(ddof=1), b.var(ddof=1)
@@ -181,7 +181,7 @@ def two_sample_ttest(
     )
     cohens_d = (mean_a - mean_b) / pooled_std if pooled_std > 0 else 0.0
 
-    # --- Confidence interval on mean difference ---
+
     mean_diff = mean_a - mean_b
     if equal_var:
         df = n_a + n_b - 2
@@ -200,7 +200,7 @@ def two_sample_ttest(
     ci_lower = mean_diff - t_crit * se_diff
     ci_upper = mean_diff + t_crit * se_diff
 
-    # --- Interpretation ---
+
     test_variant = "Welch's" if not equal_var else "Student's"
     is_sig = bool(p_value < alpha)
     if is_sig:
@@ -288,7 +288,7 @@ def z_test_proportions(
     ... )
     >>> print(result.p_value)  # doctest: +SKIP
     """
-    # --- Input validation ---
+
     for name, val, total in [
         ("successes_a", successes_a, n_a),
         ("successes_b", successes_b, n_b),
@@ -301,23 +301,23 @@ def z_test_proportions(
     if n_a < 1 or n_b < 1:
         raise ValueError("Sample sizes must be at least 1.")
 
-    # --- Proportions ---
+
     p_a = successes_a / n_a
     p_b = successes_b / n_b
     diff = p_a - p_b
 
-    # --- statsmodels z-test (pooled under H₀) ---
+    # Use statsmodels z-test, which pools standard error under H0 by default.
     count = np.array([successes_a, successes_b])
     nobs = np.array([n_a, n_b])
     z_stat, p_value = proportions_ztest(count, nobs, alternative="two-sided")
 
-    # --- CI on difference (un-pooled SE, Wald) ---
+    # Compute CI on difference using un-pooled standard error (Wald interval)
     se_diff = np.sqrt(p_a * (1 - p_a) / n_a + p_b * (1 - p_b) / n_b)
     z_crit = stats.norm.ppf(1 - alpha / 2)
     ci_lower = diff - z_crit * se_diff
     ci_upper = diff + z_crit * se_diff
 
-    # --- Interpretation ---
+
     is_sig = bool(p_value < alpha)
     if is_sig:
         interpretation = (
@@ -405,12 +405,12 @@ def chi_square_test(
 
     chi2, p_value, dof, expected = stats.chi2_contingency(table)
 
-    # --- Cramér's V ---
+
     n = table.sum()
     min_dim = min(table.shape[0], table.shape[1]) - 1
     cramers_v = np.sqrt(chi2 / (n * min_dim)) if min_dim > 0 and n > 0 else 0.0
 
-    # --- Interpretation ---
+
     is_sig = bool(p_value < alpha)
     if is_sig:
         interpretation = (
@@ -504,7 +504,7 @@ def one_way_anova(*groups: Sequence[float], alpha: float = 0.05) -> TestResult:
 
     f_stat, p_value = stats.f_oneway(*arrays)
 
-    # --- Eta-squared ---
+
     grand_mean = np.concatenate(arrays).mean()
     ss_between = sum(
         len(g) * (g.mean() - grand_mean) ** 2 for g in arrays
@@ -512,7 +512,7 @@ def one_way_anova(*groups: Sequence[float], alpha: float = 0.05) -> TestResult:
     ss_total = sum(((g - grand_mean) ** 2).sum() for g in arrays)
     eta_squared = ss_between / ss_total if ss_total > 0 else 0.0
 
-    # --- Interpretation ---
+
     k = len(arrays)
     is_sig = bool(p_value < alpha)
     if is_sig:
@@ -613,11 +613,11 @@ def mann_whitney_u(
 
     u_stat, p_value = stats.mannwhitneyu(a, b, alternative="two-sided")
 
-    # --- Rank-biserial correlation ---
+
     n_a, n_b = a.size, b.size
     rank_biserial = 1 - (2 * u_stat) / (n_a * n_b)
 
-    # --- Interpretation ---
+
     is_sig = bool(p_value < alpha)
     if is_sig:
         interpretation = (
@@ -703,7 +703,7 @@ def select_test(
             f"num_groups must be >= 2, got {num_groups}."
         )
 
-    # --- Binary metrics ---
+
     if metric_type == "binary":
         if num_groups == 2:
             return {
@@ -726,7 +726,7 @@ def select_test(
                 "alternatives": [],
             }
 
-    # --- Continuous metrics ---
+
     if num_groups == 2:
         if is_normal:
             return {
