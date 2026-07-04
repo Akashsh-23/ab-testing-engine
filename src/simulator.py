@@ -310,7 +310,7 @@ class SyntheticExperiment:
             f"  Target power:      {self.config.power}\n"
             f"  ──────────────────────────────────\n"
             f"  Observed power:    {observed_power:.3f} "
-            f"({'✅ close to target' if abs(observed_power - self.config.power) < 0.05 else '⚠️ differs from target'})\n"
+            f"({'close to target' if abs(observed_power - self.config.power) < 0.05 else 'differs from target'})\n"
             f"  Significance rate: {significance_rate:.3f}\n"
             f"  Median p-value:    {np.median(p_values):.4f}"
         )
@@ -427,7 +427,7 @@ def run_null_validation(
         f"Null Hypothesis Validation ({n_simulations} simulations)\n"
         f"  Expected FPR:  {alpha:.3f}\n"
         f"  Observed FPR:  {false_positive_rate:.3f}\n"
-        f"  Calibrated:    {'✅ Yes' if is_calibrated else '⚠️ No — check test implementation'}"
+        f"  Calibrated:    {'Yes' if is_calibrated else 'No — check test implementation'}"
     )
 
     return {

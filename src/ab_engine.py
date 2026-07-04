@@ -300,7 +300,7 @@ def _generate_verdict(
     """
     if not is_sufficient_sample:
         return (
-            "⚠️ Underpowered — Needs More Data. Your current sample size is below "
+            "Underpowered — Needs More Data. Your current sample size is below "
             "the minimum required to reliably detect the expected effect size. "
             "Continue collecting data before making a decision.",
             "underpowered",
@@ -309,21 +309,21 @@ def _generate_verdict(
     if p_value < alpha:
         if absolute_lift > 0:
             return (
-                "✅ Significant Winner: Treatment (B). The treatment group shows a "
+                "Significant Winner: Treatment (B). The treatment group shows a "
                 f"statistically significant improvement (p={p_value:.4f} < α={alpha}). "
                 "Recommendation: Ship it.",
                 "significant_b",
             )
         else:
             return (
-                "✅ Significant Winner: Control (A). The control group outperforms the "
+                "Significant Winner: Control (A). The control group outperforms the "
                 f"treatment (p={p_value:.4f} < α={alpha}). "
                 "Recommendation: Keep the current version.",
                 "significant_a",
             )
     else:
         return (
-            f"❌ Not Significant (p={p_value:.4f} ≥ α={alpha}). The observed difference "
+            f"Not Significant (p={p_value:.4f} ≥ α={alpha}). The observed difference "
             "is not statistically significant. Recommendation: Keep testing or accept "
             "that the difference is too small to detect with current sample size.",
             "not_significant",

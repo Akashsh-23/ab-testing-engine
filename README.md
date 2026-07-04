@@ -1,247 +1,174 @@
-# 🧪 A/B Testing & Statistical Significance Engine
+# A/B Testing and Statistical Significance Engine
 
-A focused, well-scoped statistical experimentation tool that covers **sample size estimation**, **hypothesis testing**, **frequentist A/B test evaluation**, and **Bayesian analysis** — built for depth and defensibility.
+A statistical experimentation library for sample size estimation, hypothesis testing, frequentist A/B test evaluation, and Bayesian analysis. 
 
-> **Design principle:** Every feature in this tool is something you can explain and justify line-by-line. It directly demonstrates: *"Strong understanding of the fundamental concepts of Statistical Modelling & Algorithms — Hypothesis testing, Sample size estimation, A/B testing."*
-
----
-
-## 🎯 What It Does
-
-Input experiment data (or simulate it) and get back:
-
-- ✅ Whether you have **enough sample size** to detect a meaningful effect
-- ✅ Whether the observed difference is **statistically significant** (p-value, CI)
-- ✅ **Bayesian probability** that B beats A, with expected loss and credible intervals
-- ✅ A **plain-English recommendation**: "Ship it," "Not significant — keep testing," or "Needs more data"
+This engine is designed to provide robust statistical tools for analysis, validation, and decision-support in product experimentation.
 
 ---
 
-## 📊 Supported Statistical Tests
+## Key Features
 
-| Test | Use Case | Module |
-|------|----------|--------|
-| Two-sample t-test | Continuous metrics, 2 groups, normal data | `hypothesis_tests.py` |
-| Z-test for proportions | Conversion rates, 2 groups | `hypothesis_tests.py` |
-| Chi-square test | Independence in contingency tables | `hypothesis_tests.py` |
-| One-way ANOVA | Continuous metrics, 3+ groups | `hypothesis_tests.py` |
-| Mann-Whitney U | Non-parametric alternative (skewed data) | `hypothesis_tests.py` |
-| Beta-Binomial Bayesian | Bayesian conversion rate comparison | `bayesian_ab.py` |
+* **Sample Size Determination:** Estimate required sample sizes for both binomial proportions (conversion rates) and continuous metrics (e.g., revenue per user).
+* **Statistical Hypothesis Testing:** Programmatic implementations of standard frequentist tests with uniform outputs (p-value, confidence interval, and standardized effect size).
+* **Bayesian A/B Analysis:** Conjugate Beta-Binomial models to estimate posterior distributions, probability of superiority, and expected risk (expected loss).
+* **Monte Carlo Simulator:** Generate synthetic experiment datasets to perform statistical power analysis and Type I error rate calibration.
+* **Interactive Dashboard:** Streamlit-based UI for real-time calculation, visualization of posterior distributions, and simulation runs.
 
 ---
 
-## 🏗️ Project Structure
+## Supported Statistical Tests
+
+| Statistical Test | Metric Type | Target Data Type |
+|------------------|-------------|------------------|
+| Two-sample t-test | Continuous | Normally distributed continuous metrics |
+| Z-test for proportions | Binary | Binomial successes / conversion rates |
+| Chi-square test of independence | Categorical / Binary | Contingency tables |
+| One-way ANOVA | Continuous | Comparisons across three or more groups |
+| Mann-Whitney U test | Continuous / Ordinal | Non-parametric distributions (skewed data) |
+| Beta-Binomial Bayesian model | Binary | Probability of superiority and risk estimation |
+
+---
+
+## Project Structure
 
 ```
 ab-testing-engine/
 ├── src/
-│   ├── __init__.py              # Package init
+│   ├── __init__.py              # Package initializer
 │   ├── sample_size.py           # Sample size calculators (proportions + continuous)
 │   ├── hypothesis_tests.py      # Core statistical tests (t-test, z-test, chi-sq, ANOVA, Mann-Whitney)
-│   ├── ab_engine.py             # A/B test evaluation engine (lift, CI, p-value, verdict)
+│   ├── ab_engine.py             # A/B test evaluation engine (lift, CI, p-value, effect sizes)
 │   ├── bayesian_ab.py           # Bayesian A/B testing (Beta-Binomial, P(B>A), expected loss)
-│   └── simulator.py             # Synthetic experiment generator + Monte Carlo validation
+│   └── simulator.py             # Synthetic experiment generator + power validation
 ├── tests/
-│   ├── test_sample_size.py      # Cross-validation against statsmodels
-│   ├── test_hypothesis_tests.py # Known-output fixtures for each test
-│   ├── test_ab_engine.py        # End-to-end scenario tests
-│   ├── test_bayesian_ab.py      # Posterior & probability validation
-│   └── test_simulation_validation.py  # The "unit test for statistics"
+│   ├── test_sample_size.py      # Validation against statsmodels references
+│   ├── test_hypothesis_tests.py # Unit tests for frequentist methods
+│   ├── test_ab_engine.py        # End-to-end evaluation scenario tests
+│   ├── test_bayesian_ab.py      # Posterior calculation and simulation verification
+│   └── test_simulation_validation.py # Monte Carlo power and Type I error checks
 ├── reports/
-│   └── figures/                 # Generated visualizations
-├── app.py                       # Streamlit dashboard (4 tabs)
-├── requirements.txt             # Dependencies
-├── .gitignore
-└── README.md                    # This file
+│   └── figures/                 # Directory for output plots
+├── app.py                       # Streamlit dashboard
+├── requirements.txt             # Project dependencies
+├── setup.cfg                    # Pytest configuration
+├── LICENSE                      # MIT License
+└── README.md                    # Project documentation
 ```
 
 ---
 
-## 🚀 Quick Start
+## Getting Started
 
 ### Installation
 
-```bash
-# Clone the repository
-git clone <repo-url>
-cd ab-testing-engine
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd ab-testing-engine
+   ```
 
-# Create virtual environment (recommended)
-python -m venv .venv
-source .venv/bin/activate    # Linux/Mac
-.venv\Scripts\activate       # Windows
+2. Set up a virtual environment and install dependencies:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate    # Linux/MacOS
+   .venv\Scripts\activate       # Windows
 
-# Install dependencies
-pip install -r requirements.txt
-```
+   pip install -r requirements.txt
+   ```
 
-### Run the Dashboard
+### Running the Dashboard
 
+Launch the interactive Streamlit dashboard:
 ```bash
 streamlit run app.py
 ```
 
-### Run Tests
+### Running Tests
 
+Execute the unit test suite with pytest:
 ```bash
-# All tests
+# Run all tests
 pytest tests/ -v
 
-# Quick tests (skip slow Monte Carlo validation)
+# Skip the slow Monte Carlo simulation tests
 pytest tests/ -v -m "not slow"
-
-# Specific module
-pytest tests/test_sample_size.py -v
 ```
 
 ---
 
-## 📖 End-to-End Walkthrough
+## Usage Guide
 
-### Scenario: E-commerce Checkout Optimization
-
-Your team redesigned the checkout flow and wants to know if it improves conversion rates.
-
-**Step 1 — Sample Size Calculation**
+### 1. Sample Size Estimation
 
 ```python
 from src.sample_size import sample_size_proportions
 
 n = sample_size_proportions(
-    baseline_rate=0.10,    # Current: 10% conversion rate
-    mde=0.02,              # Want to detect: 2 percentage point increase
+    baseline_rate=0.10,    # 10% baseline conversion rate
+    mde=0.02,              # 2% minimum detectable effect
     alpha=0.05,            # 5% significance level
-    power=0.80             # 80% power
+    power=0.80             # 80% target power
 )
-print(f"Need {n:,} users per group ({n*2:,} total)")
-# Output: Need ~3,623 users per group (7,246 total)
+print(f"Required sample size per group: {n}")
+# Output: Required sample size per group: 3623
 ```
 
-**Step 2 — Run the Experiment (simulated)**
-
-```python
-from src.simulator import SyntheticExperiment
-
-sim = SyntheticExperiment(
-    baseline_rate=0.10, effect_size=0.02,
-    sample_size=4000, metric_type="binary", random_seed=42
-)
-control, treatment = sim.generate_data()
-```
-
-**Step 3 — Frequentist A/B Test**
+### 2. Running an A/B Test (Frequentist)
 
 ```python
 from src.ab_engine import run_ab_test
 
 result = run_ab_test(
-    successes_a=int(control.sum()), n_a=len(control),
-    successes_b=int(treatment.sum()), n_b=len(treatment),
+    successes_a=120, n_a=1000,
+    successes_b=145, n_b=1000,
     metric_type="binary"
 )
 
-print(f"Control rate:   {result.control_estimate:.2%}")
-print(f"Treatment rate: {result.treatment_estimate:.2%}")
-print(f"Relative lift:  {result.relative_lift:+.1f}%")
-print(f"P-value:        {result.test_result.p_value:.4f}")
-print(f"Verdict:        {result.verdict}")
+print(f"Control Conversion Rate: {result.control_estimate:.2%}")
+print(f"Treatment Conversion Rate: {result.treatment_estimate:.2%}")
+print(f"Relative Lift: {result.relative_lift:+.1f}%")
+print(f"P-value: {result.test_result.p_value:.4f}")
+print(f"Recommendation: {result.verdict}")
 ```
 
-**Step 4 — Bayesian Analysis**
+### 3. Running a Bayesian Comparison
 
 ```python
 from src.bayesian_ab import run_bayesian_ab
 
-bayes = run_bayesian_ab(
-    successes_a=int(control.sum()), trials_a=len(control),
-    successes_b=int(treatment.sum()), trials_b=len(treatment),
+bayes_result = run_bayesian_ab(
+    successes_a=120, trials_a=1000,
+    successes_b=145, trials_b=1000
 )
 
-print(f"P(B > A):       {bayes.prob_b_beats_a:.1%}")
-print(f"Expected loss:  {bayes.expected_loss_choosing_b:.5f}")
-print(f"Verdict:        {bayes.verdict}")
-```
-
-**Step 5 — Validate the Engine**
-
-```python
-from src.simulator import SyntheticExperiment
-
-sim = SyntheticExperiment(
-    baseline_rate=0.10, effect_size=0.02,
-    sample_size=3623,  # Use the recommended N
-    metric_type="binary", random_seed=42
-)
-validation = sim.run_power_validation(n_simulations=1000)
-print(validation["summary"])
-# Observed power should be ≈ 80% — proving the engine is correct!
+print(f"Probability B beats A: {bayes_result.prob_b_beats_a:.1%}")
+print(f"Expected Loss choosing B: {bayes_result.expected_loss_choosing_b:.5f}")
+print(f"Verdict: {bayes_result.verdict}")
 ```
 
 ---
 
-## 🔬 The "Unit Test for Statistics"
+## Statistical Validation and Calibration
 
-The simulation validator (Phase 5) is the differentiating piece of this project. It proves the engine is *correct*, not just that it runs:
-
-1. **Power Validation:** At the recommended sample size, the test detects the true effect ~80% of the time (matching the target power).
-2. **Type I Error Calibration:** Under the null hypothesis (no effect), the false positive rate ≈ α (5%).
-3. **Monotonicity:** Power increases with sample size — as expected from theory.
-
-This is unusual and impressive to demonstrate in an interview.
+To ensure the statistical accuracy of the calculations:
+* **Power Calibration:** Using Monte Carlo simulations, we verify that at the calculated minimum sample size, the observed true positive rate matches the theoretical target power (e.g., ~80% detection rate).
+* **Type I Error Rate Control:** Running simulations under the null hypothesis (true effect size = 0) confirms that the false positive rate converges to the selected alpha value (e.g., ~5%).
+* **Sample Size Verification:** The A/B evaluation module runs standard power analysis, warning the user if the actual sample size is underpowered for detecting the observed effect size.
 
 ---
 
-## 🧠 Statistical Methods
+## Technical Stack
 
-### Frequentist Approach
-- Tests the null hypothesis H₀: "no difference between groups"
-- Reports p-value: probability of observing this result (or more extreme) if H₀ is true
-- Decision: reject H₀ if p < α
-
-### Bayesian Approach
-- Uses Beta(1,1) uninformative prior (conjugate to Binomial likelihood)
-- Updates with observed data → Beta(α + successes, β + failures) posterior
-- Reports P(B > A) via Monte Carlo sampling from posteriors
-- Reports expected loss: E[max(other − chosen, 0)]
-- Decision: based on probability threshold and risk tolerance
-
-### When They Disagree
-The frequentist and Bayesian approaches can disagree on borderline cases. The Bayesian approach provides richer information (probability of winning + expected cost of being wrong) while the frequentist approach provides a simple binary decision with controlled error rates.
+* **Language:** Python 3.9+
+* **Statistics:** SciPy (`scipy.stats`), statsmodels
+* **Data Processing:** pandas, NumPy
+* **Visualization:** Plotly, Matplotlib, Seaborn
+* **Dashboard:** Streamlit
+* **Testing Framework:** pytest
 
 ---
 
-## 📋 Tech Stack
+## License
 
-| Layer | Tools |
-|-------|-------|
-| Language | Python 3.9+ |
-| Statistics | SciPy, statsmodels |
-| Data | pandas, NumPy |
-| Bayesian | scipy.stats (Beta distribution) |
-| Visualization | Plotly (interactive), Matplotlib, Seaborn |
-| Dashboard | Streamlit |
-| Testing | pytest |
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## 📝 Resume Bullet
-
-> Built a statistical experimentation engine covering sample size estimation, hypothesis testing (t-test, z-test, chi-square, ANOVA, Mann-Whitney), frequentist A/B test evaluation, and Bayesian A/B testing (Beta-Binomial posterior, probability-to-win, expected loss); validated statistical correctness via Monte Carlo simulation, confirming the engine achieves ~80% detection power at the calculated sample size; built an interactive Streamlit dashboard for experiment analysis.
-
----
-
-## 🗺️ Skill-to-JD Mapping
-
-| JD Requirement | Covered By |
-|----------------|------------|
-| Hypothesis testing, Sample size estimation, A/B testing | Entire project — direct, word-for-word JD match |
-| Strong understanding of Statistical Modelling & Algorithms | All core modules (Phases 1–5) |
-| Python, pandas, NumPy | All phases |
-| Ability to solve complex business problems | Verdict logic, Bayesian framing |
-| Present results to a business audience | Streamlit dashboard, plain-English verdicts |
-
----
-
-## 📜 License
-
-MIT License — see [LICENSE](LICENSE) for details.

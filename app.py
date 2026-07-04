@@ -21,7 +21,7 @@ from plotly.subplots import make_subplots
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="A/B Testing Engine",
-    page_icon="🧪",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -229,20 +229,20 @@ def create_plotly_theme():
 
 def main():
     # Hero header
-    st.markdown('<div class="hero-title">🧪 A/B Testing Engine</div>', unsafe_allow_html=True)
+        st.markdown('<div class="hero-title">A/B Testing Engine</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="hero-subtitle">'
-        'Statistical significance, sample sizing, and Bayesian analysis — all in one place'
+        'Statistical significance, sample sizing, and Bayesian analysis'
         '</div>',
         unsafe_allow_html=True,
     )
 
     # ── Tabs ─────────────────────────────────────────────────────────────────
     tab1, tab2, tab3, tab4 = st.tabs([
-        "📐 Sample Size Calculator",
-        "📊 Run A/B Test",
-        "🔮 Bayesian View",
-        "🔬 Simulation Validator",
+        "Sample Size Calculator",
+        "Run A/B Test",
+        "Bayesian View",
+        "Simulation Validator",
     ])
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -309,7 +309,7 @@ def main():
                 key="ss_power",
             )
 
-            calculate = st.button("🔢 Calculate Sample Size", use_container_width=True, type="primary")
+            calculate = st.button("Calculate Sample Size", use_container_width=True, type="primary")
 
         with col_result:
             if calculate:
@@ -341,7 +341,7 @@ def main():
                     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
                     # Power curve visualization
-                    st.markdown("#### 📈 Power Curve")
+                    st.markdown("#### Power Curve")
                     sample_range = np.linspace(max(20, n * 0.1), n * 2.5, 50).astype(int)
                     from scipy import stats as sp_stats
 
@@ -388,7 +388,7 @@ def main():
                     )
                     st.plotly_chart(fig, use_container_width=True)
 
-                    st.info(f"💡 **Interpretation:** You need at least **{n:,}** observations per group "
+                    st.info(f"**Interpretation:** You need at least **{n:,}** observations per group "
                             f"({total_n:,} total) to detect an effect of {sub_text} with "
                             f"{power_ss:.0%} power at α={alpha_ss}.")
 
@@ -486,7 +486,7 @@ def main():
 
         alpha_ab = st.slider("Significance Level (α)", 0.01, 0.10, 0.05, 0.01, key="ab_alpha")
 
-        run_test = st.button("🚀 Run A/B Test", use_container_width=True, type="primary")
+        run_test = st.button("Run A/B Test", use_container_width=True, type="primary")
 
         if run_test:
             from src.ab_engine import run_ab_test
@@ -579,22 +579,22 @@ def main():
                 col_detail1, col_detail2 = st.columns(2)
 
                 with col_detail1:
-                    st.markdown("#### 📋 Statistical Details")
+                    st.markdown("#### Statistical Details")
                     details = {
                         "Test Used": result.test_result.test_name,
                         "Test Statistic": f"{result.test_result.statistic:.4f}",
                         "P-Value": f"{result.test_result.p_value:.6f}",
-                        "Significant": "✅ Yes" if result.test_result.is_significant else "❌ No",
+                        "Significant": "Yes" if result.test_result.is_significant else "No",
                         f"{result.effect_size_label}": f"{result.effect_size:.4f}",
                         "95% CI (difference)": f"({result.confidence_interval[0]:.4f}, {result.confidence_interval[1]:.4f})",
                     }
                     st.table(pd.DataFrame(details.items(), columns=["Metric", "Value"]))
 
                 with col_detail2:
-                    st.markdown("#### 🔋 Power Analysis")
+                    st.markdown("#### Power Analysis")
                     ss = result.sample_size_check
                     power_details = {
-                        "Sufficient Sample": "✅ Yes" if ss["is_sufficient"] else "⚠️ No",
+                        "Sufficient Sample": "Yes" if ss["is_sufficient"] else "No",
                         "Actual N (min group)": f"{ss['actual']:,}",
                         "Required N": f"{ss['required']:,}" if ss['required'] is not None else "N/A",
                         "Shortfall": f"{ss['shortfall']:,}" if ss['shortfall'] > 0 else "0",
@@ -603,7 +603,7 @@ def main():
                     st.caption(ss["message"])
 
                 # Confidence Interval visualization
-                st.markdown("#### 📊 Confidence Interval on Difference")
+                st.markdown("#### Confidence Interval on Difference")
                 ci_low, ci_high = result.confidence_interval
                 ci_mid = result.absolute_lift
 
@@ -666,7 +666,7 @@ def main():
             risk_threshold = st.number_input("Risk Threshold", 0.001, 0.10, 0.01, 0.005,
                                               format="%.3f", key="bay_risk")
 
-            run_bayesian = st.button("🔮 Run Bayesian Analysis", use_container_width=True, type="primary")
+            run_bayesian = st.button("Run Bayesian Analysis", use_container_width=True, type="primary")
 
         with col_bay_result:
             if run_bayesian:
@@ -704,7 +704,7 @@ def main():
                     ])
 
                     # Credible intervals
-                    st.markdown("#### 📏 95% Credible Intervals")
+                    st.markdown("#### 95% Credible Intervals")
                     ci_table = pd.DataFrame({
                         "Variant": ["Control (A)", "Treatment (B)"],
                         "Lower": [f"{bayes_result.credible_interval_a[0]:.4f}",
@@ -719,7 +719,7 @@ def main():
                     st.table(ci_table)
 
                     # Posterior plot
-                    st.markdown("#### 📈 Posterior Distributions")
+                    st.markdown("#### Posterior Distributions")
                     post_a = compute_posterior(bay_conv_a, bay_n_a, prior_alpha, prior_beta)
                     post_b = compute_posterior(bay_conv_b, bay_n_b, prior_alpha, prior_beta)
                     fig = plot_posteriors(post_a, post_b)
@@ -727,7 +727,7 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
 
                     # Frequentist comparison
-                    st.markdown("#### ⚖️ Frequentist vs. Bayesian Comparison")
+                    st.markdown("#### Frequentist vs. Bayesian Comparison")
                     from src.ab_engine import run_ab_test
                     freq_result = run_ab_test(
                         successes_a=bay_conv_a, n_a=bay_n_a,
@@ -754,10 +754,10 @@ def main():
                         or (not freq_result.test_result.is_significant and bayes_result.prob_b_beats_a <= 0.95)
                     )
                     if agree:
-                        st.success("✅ **Frequentist and Bayesian approaches agree** on this experiment.")
+                        st.success("**Frequentist and Bayesian approaches agree** on this experiment.")
                     else:
                         st.warning(
-                            "⚠️ **Approaches disagree.** This can happen when the effect is borderline. "
+                            "**Approaches disagree.** This can happen when the effect is borderline. "
                             "The Bayesian approach provides a richer picture by quantifying the "
                             "probability of each variant being better and the expected cost of a wrong decision."
                         )
@@ -769,7 +769,7 @@ def main():
             else:
                 st.markdown("""
                 <div class="glass-card">
-                    <h4 style="color: #e2e8f0; margin-top: 0;">🔮 Bayesian A/B Testing</h4>
+                    <h4 style="color: #e2e8f0; margin-top: 0;">Bayesian A/B Testing</h4>
                     <p style="color: #94a3b8;">
                         Unlike frequentist testing, Bayesian analysis tells you the
                         <strong>probability that B is better than A</strong> and the
@@ -820,7 +820,7 @@ def main():
             sim_val_alpha = st.slider("Alpha", 0.01, 0.10, 0.05, 0.01, key="sim_val_alpha")
             sim_val_power = st.slider("Target Power", 0.70, 0.99, 0.80, 0.01, key="sim_val_power")
 
-            run_simulation = st.button("🔬 Run Simulation", use_container_width=True, type="primary")
+            run_simulation = st.button("Run Simulation", use_container_width=True, type="primary")
 
         with col_sim_result:
             if run_simulation:
@@ -847,7 +847,7 @@ def main():
 
                     render_metric_cards([
                         ("Observed Power", f"{result['observed_power']:.1%}",
-                         "✅ Close to target" if power_ok else "⚠️ Differs from target"),
+                         "Close to target" if power_ok else "Differs from target"),
                         ("Target Power", f"{sim_val_power:.0%}", f"α = {sim_val_alpha}"),
                         ("Detections", f"{result['correct_detections']}/{result['total_simulations']}",
                          "Correct effect detections"),
@@ -855,19 +855,19 @@ def main():
 
                     if power_ok:
                         st.success(
-                            f"✅ **Validation passed!** Observed power ({result['observed_power']:.1%}) "
+                            f"**Validation passed!** Observed power ({result['observed_power']:.1%}) "
                             f"is within ±8pp of the target ({sim_val_power:.0%}). "
                             "The statistical engine is correctly calibrated."
                         )
                     else:
                         st.warning(
-                            f"⚠️ Observed power ({result['observed_power']:.1%}) differs from "
+                            f"Observed power ({result['observed_power']:.1%}) differs from "
                             f"target ({sim_val_power:.0%}). This may indicate the sample size "
                             "doesn't match the recommended value for this effect size."
                         )
 
                     # P-value distribution
-                    st.markdown("#### 📊 P-Value Distribution")
+                    st.markdown("#### P-Value Distribution")
                     fig_pval = go.Figure()
                     fig_pval.add_trace(go.Histogram(
                         x=result["p_values"],
@@ -890,7 +890,7 @@ def main():
                     st.plotly_chart(fig_pval, use_container_width=True)
 
                     # Null hypothesis validation
-                    st.markdown("#### 🎯 Type I Error Calibration (Null Hypothesis)")
+                    st.markdown("#### Type I Error Calibration (Null Hypothesis)")
                     with st.spinner("Running null validation..."):
                         null_result = run_null_validation(
                             metric_type="binary" if sim_metric == "Binary" else "continuous",
@@ -904,17 +904,17 @@ def main():
                     render_metric_cards([
                         ("False Positive Rate", f"{null_result['false_positive_rate']:.1%}",
                          f"Expected: {sim_val_alpha:.0%}"),
-                        ("Calibrated", "✅ Yes" if null_result["is_calibrated"] else "⚠️ No",
+                        ("Calibrated", "Yes" if null_result["is_calibrated"] else "No",
                          "FPR ≈ α"),
                     ])
 
                     if null_result["is_calibrated"]:
-                        st.success("✅ **Type I error is properly controlled.** False positive rate ≈ α.")
+                        st.success("**Type I error is properly controlled.** False positive rate ≈ α.")
                     else:
-                        st.warning("⚠️ False positive rate deviates from α. Check test implementation.")
+                        st.warning("False positive rate deviates from α. Check test implementation.")
 
                     # Summary
-                    st.markdown("#### 📝 Full Simulation Summary")
+                    st.markdown("#### Full Simulation Summary")
                     st.code(result["summary"])
 
                 except Exception as e:
@@ -924,21 +924,16 @@ def main():
             else:
                 st.markdown("""
                 <div class="glass-card">
-                    <h4 style="color: #e2e8f0; margin-top: 0;">🔬 The "Unit Test for Statistics"</h4>
+                    <h4 style="color: #e2e8f0; margin-top: 0;">Statistical Model Validation</h4>
                     <p style="color: #94a3b8;">
-                        This validator proves your engine is <strong>correct</strong>, not just
-                        that it runs. It simulates many experiments with a <em>known</em> true
-                        effect and checks that:
+                        This validator verifies the mathematical correctness of the
+                        statistical calculations under controlled parameters:
                     </p>
                     <ul style="color: #94a3b8; margin-left: 1rem;">
-                        <li>Detection rate ≈ target power (~80%)</li>
-                        <li>False positive rate ≈ α (~5%) under the null</li>
-                        <li>Power increases with sample size (monotonicity)</li>
+                        <li>Observed statistical power matches theoretical expectations (~80% target power)</li>
+                        <li>Type I error control matches alpha level (~5% false positive rate under the null hypothesis)</li>
+                        <li>Monotonicity of power as sample size scales</li>
                     </ul>
-                    <p style="color: #64748b; font-size: 0.85rem;">
-                        This is a strong, unusual thing to show in an interview — proving
-                        statistical correctness, not just code functionality.
-                    </p>
                 </div>
                 """, unsafe_allow_html=True)
 
